@@ -1,12 +1,10 @@
 # DP-API – Longest Common Subsequence (LCS)
 
-DP-API is a **Dynamic Programming based REST API** that computes the  
-**Longest Common Subsequence (LCS)** between two **numeric sequences**.
+DP-API is a **Dynamic Programming–based REST API** that computes the  
+**Longest Common Subsequence (LCS)** between two numeric sequences.
 
-This project is designed as an academic and internship-ready implementation  
-where the **input and output are strictly numeric**, as required.
+This project is designed as an **academic implementation** that demonstrates the practical application of Dynamic Programming concepts through a RESTful API.
 
----
 
 ## 🚀 Live Deployment
 🔗 https://dp-api-wr2q.onrender.com
