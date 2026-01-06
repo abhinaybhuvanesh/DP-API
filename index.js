@@ -7,19 +7,29 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Root route (optional but useful)
+// Root route (health check)
 app.get("/", (req, res) => {
-  res.send("Longest Common Subsequence (LCS) Dynamic Programming API is running");
+  res.send(
+    "Longest Common Subsequence (LCS) Dynamic Programming API is running"
+  );
 });
 
-// Dynamic Programming - Longest Common Subsequence
-function longestCommonSubsequence(s1, s2) {
+// LCS API
+app.post("/api/lcs", (req, res) => {
+  const { s1, s2 } = req.body;
+
+  if (!s1 || !s2) {
+    return res.status(400).json({
+      error: "Both s1 and s2 are required"
+    });
+  }
+
   const m = s1.length;
   const n = s2.length;
 
-  const dp = Array(m + 1)
-    .fill(null)
-    .map(() => Array(n + 1).fill(0));
+  const dp = Array.from({ length: m + 1 }, () =>
+    Array(n + 1).fill(0)
+  );
 
   for (let i = 1; i <= m; i++) {
     for (let j = 1; j <= n; j++) {
@@ -31,30 +41,17 @@ function longestCommonSubsequence(s1, s2) {
     }
   }
 
-  return dp[m][n];
-}
-
-// API endpoint
-app.post("/api/lcs", (req, res) => {
-  const { s1, s2 } = req.body;
-
-  if (!s1 || !s2) {
-    return res.status(400).json({
-      error: "Both s1 and s2 strings are required"
-    });
-  }
-
-  const lcsLength = longestCommonSubsequence(s1, s2);
-
   res.json({
     string1: s1,
     string2: s2,
-    lcsLength,
+    lcsLength: dp[m][n],
     technique: "Dynamic Programming (Bottom-Up)"
   });
 });
 
-// Server
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+// Render-safe port
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
