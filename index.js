@@ -2,37 +2,21 @@ import express from "express";
 import cors from "cors";
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Root route (health check)
-app.get("/", (req, res) => {
-  res.send(
-    "Longest Common Subsequence (LCS) Dynamic Programming API is running"
-  );
-});
-
-// LCS API
-app.post("/api/lcs", (req, res) => {
-  const { s1, s2 } = req.body;
-
-  if (!s1 || !s2) {
-    return res.status(400).json({
-      error: "Both s1 and s2 are required"
-    });
-  }
-
-  const m = s1.length;
-  const n = s2.length;
-
-  const dp = Array.from({ length: m + 1 }, () =>
-    Array(n + 1).fill(0)
+// LCS FUNCTION
+function lcsLength(s1, s2) {
+  const n = s1.length;
+  const m = s2.length;
+  const dp = Array.from({ length: n + 1 }, () =>
+    Array(m + 1).fill(0)
   );
 
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j <= m; j++) {
       if (s1[i - 1] === s2[j - 1]) {
         dp[i][j] = dp[i - 1][j - 1] + 1;
       } else {
@@ -40,17 +24,26 @@ app.post("/api/lcs", (req, res) => {
       }
     }
   }
+  return dp[n][m];
+}
 
-  res.json({
-    string1: s1,
-    string2: s2,
-    lcsLength: dp[m][n],
-    technique: "Dynamic Programming (Bottom-Up)"
-  });
+// ROOT
+app.get("/", (req, res) => {
+  res.send("LCS API is running");
 });
 
-// Render-safe port
-const PORT = process.env.PORT || 3000;
+// ✅ THIS IS WHAT YOUR SIR NEEDS (GET → NUMBER)
+app.get("/lcs", (req, res) => {
+  const s1 = req.query.s1;
+  const s2 = req.query.s2;
+
+  if (!s1 || !s2) {
+    return res.send("0");
+  }
+
+  const result = lcsLength(s1, s2);
+  res.send(result.toString()); // NUMBER ONLY
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
