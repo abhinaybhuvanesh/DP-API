@@ -1,48 +1,63 @@
 import express from "express";
-import cors from "cors";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(express.json());
+/**
+ * Home route
+ */
+app.get("/", (req, res) => {
+  res.send("LCS API is running. Use /lcs?a=1,2,3&b=2,3");
+});
 
-// LCS FUNCTION
-function lcsLength(s1, s2) {
-  const n = s1.length;
-  const m = s2.length;
+/**
+ * LCS logic (numbers)
+ */
+function lcsLength(arr1, arr2) {
+  const n = arr1.length;
+  const m = arr2.length;
+
   const dp = Array.from({ length: n + 1 }, () =>
     Array(m + 1).fill(0)
   );
 
   for (let i = 1; i <= n; i++) {
     for (let j = 1; j <= m; j++) {
-      if (s1[i - 1] === s2[j - 1]) {
+      if (arr1[i - 1] === arr2[j - 1]) {
         dp[i][j] = dp[i - 1][j - 1] + 1;
       } else {
         dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
       }
     }
   }
+
   return dp[n][m];
 }
 
-// ROOT
-app.get("/", (req, res) => {
-  res.send("LCS API is running");
-});
-
-// ✅ THIS IS WHAT YOUR SIR NEEDS (GET → NUMBER)
+/**
+ * LCS API route
+ * Example:
+ * /lcs?a=1,2,3,4&b=2,3,4
+ */
 app.get("/lcs", (req, res) => {
-  const s1 = req.query.s1;
-  const s2 = req.query.s2;
+  const { a, b } = req.query;
 
-  if (!s1 || !s2) {
-    return res.send("0");
+  if (!a || !b) {
+    return res.status(400).json({
+      error: "Provide inputs like ?a=1,2,3&b=2,3"
+    });
   }
 
-  const result = lcsLength(s1, s2);
-  res.send(result.toString()); // NUMBER ONLY
+  const arr1 = a.split(",").map(Number);
+  const arr2 = b.split(",").map(Number);
+
+  const length = lcsLength(arr1, arr2);
+
+  res.json({
+    sequence1: arr1,
+    sequence2: arr2,
+    lcsLength: length
+  });
 });
 
 app.listen(PORT, () => {
