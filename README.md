@@ -18,7 +18,7 @@ Inputs are provided as **query parameters**:
 
 ## Live URL: https://dp-api-wr2q.onrender.com
 
-Usage:
+Example Usage:
 ## https://dp-api-wr2q.onrender.com/lcs?a=1,2,3,4&b=2,3
 
 Output:
